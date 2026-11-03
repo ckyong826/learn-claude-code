@@ -45,6 +45,7 @@ except ImportError:
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
+// load env
 load_dotenv(override=True)
 
 if os.getenv("ANTHROPIC_BASE_URL"):
@@ -53,12 +54,15 @@ if os.getenv("ANTHROPIC_BASE_URL"):
 client = Anthropic(base_url=os.getenv("ANTHROPIC_BASE_URL"))
 MODEL = os.environ["MODEL_ID"]
 
+// -- System prompt --
 ENVIRONMENT_PROMPT = (
     "Windows: the bash tool runs through cmd.exe; use cmd.exe syntax, not Unix "
     "Bash or PowerShell syntax"
     if os.name == "nt"
     else "Unix-like: the bash tool runs the system shell"
 )
+
+// -- System prompt --
 SYSTEM = (
     f"You are a coding agent at {os.getcwd()}. Environment: {ENVIRONMENT_PROMPT}. "
     "Use bash to solve tasks. Act, don't explain."
@@ -78,14 +82,17 @@ TOOLS = [{
 
 # -- Tool execution --
 def run_bash(command: str) -> str:
+    // Define a list of dangerous commands to block
     dangerous = ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/"]
     if any(d in command for d in dangerous):
         return "Error: Dangerous command blocked"
     try:
+        // Run the command in a subprocess, capture output, and return it
         r = subprocess.run(command, shell=True, cwd=os.getcwd(),
                            capture_output=True, text=True, errors="replace", timeout=120)
         out = (r.stdout + r.stderr).strip()
         return out[:50000] if out else "(no output)"
+        // Handle timeout and other exceptions
     except subprocess.TimeoutExpired:
         return "Error: Timeout (120s)"
     except (FileNotFoundError, OSError) as e:
@@ -95,6 +102,7 @@ def run_bash(command: str) -> str:
 # -- The core pattern: a while loop that calls tools until the model stops --
 def agent_loop(messages: list):
     while True:
+        // Call the model with the current messages and tools defined
         response = client.messages.create(
             model=MODEL, system=SYSTEM, messages=messages,
             tools=TOOLS, max_tokens=8000,
@@ -114,8 +122,10 @@ def agent_loop(messages: list):
         results = []
         for block in tool_calls:
             print(f"\033[33m$ {block.input['command']}\033[0m")
+            // run the bash command and capture output (tool calling)
             output = run_bash(block.input["command"])
             print(output[:200])
+            // Append the tool result to the results list
             results.append({
                 "type": "tool_result",
                 "tool_use_id": block.id,

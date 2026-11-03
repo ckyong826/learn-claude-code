@@ -19,13 +19,9 @@ Humans are the original proof. A biological neural network, refined by millions 
 The historical record is unambiguous:
 
 - **2013 -- DeepMind DQN plays Atari.** A single neural network, receiving only raw pixels and game scores, learned 7 Atari 2600 games -- surpassing prior algorithms and beating human experts in 3 of them. By 2015, scaled to [49 games at professional tester level](https://www.nature.com/articles/nature14236), published in *Nature*. No game-specific rules. One model, learning from experience.
-
 - **2019 -- OpenAI Five conquers Dota 2.** Five neural networks played [45,000 years of Dota 2 against themselves](https://openai.com/index/openai-five-defeats-dota-2-world-champions/) over 10 months, then defeated **OG** -- the TI8 world champions -- 2-0 in a live match. In the public arena, the AI won 99.4% of 42,729 games. No scripted strategies. Models learned teamwork through self-play.
-
 - **2019 -- DeepMind AlphaStar masters StarCraft II.** AlphaStar [beat a professional player 10-1](https://deepmind.google/blog/alphastar-mastering-the-real-time-strategy-game-starcraft-ii/) in closed matches, then reached [Grandmaster rank](https://www.nature.com/articles/d41586-019-03298-6) on the European server -- top 0.15% of 90,000 players. An incomplete-information, real-time game with a combinatorial action space far exceeding chess or Go.
-
 - **2019 -- Tencent Jueyu dominates Honor of Kings.** Tencent AI Lab's "Jueyu" system [defeated KPL professional players in full 5v5](https://www.jiemian.com/article/3371171.html) at the World Champion Cup semifinal. In 1v1 mode, pros [won just 1 out of 15 matches, lasting under 8 minutes at best](https://developer.aliyun.com/article/851058). Training intensity: one day equaled 440 human years. A model that learned the entire game from scratch through self-play.
-
 - **2024-2025 -- LLM agents reshape software engineering.** Claude, GPT, Gemini -- large language models trained on the full breadth of human code and reasoning -- are deployed as coding agents. They read codebases, write implementations, debug failures, and coordinate as teams. The architecture is identical to every previous agent: a trained model, placed in an environment, given tools for perception and action.
 
 Every milestone points to the same fact: **Agency -- the ability to perceive, reason, and act -- is trained, not coded.** But every agent also needs an environment to operate in: an Atari emulator, the Dota 2 client, the StarCraft II engine, an IDE and a terminal. The model supplies the intelligence. The environment supplies the action space. Together they form a complete agent.
@@ -69,13 +65,9 @@ This repository teaches you to build the vehicle. A vehicle for coding. But the 
 If you are reading this repository, you are most likely a harness engineer. Here is what the job actually entails:
 
 - **Implement tools.** Give the agent hands. File read/write, shell execution, API calls, browser control, database queries. Each tool is one action the agent can take in its environment. Design them atomic, composable, and clearly described.
-
 - **Curate knowledge.** Give the agent domain expertise. Product documentation, architecture decision records, style guides, compliance requirements. Load on demand, not upfront.
-
 - **Manage context.** Subagents keep focused work in a separate message list. Context compaction shortens older history. Task systems let goals persist beyond a single conversation.
-
 - **Control permissions.** Give the agent boundaries. Sandbox file access. Require approval for destructive operations. Enforce trust boundaries between the agent and external systems.
-
 - **Collect trajectory data.** Every action sequence the agent executes in your harness is training signal. Real deployment trajectories are the raw material for fine-tuning the next generation of agent models.
 
 You are not writing intelligence. You are building the world that intelligence inhabits. The quality of that world directly determines how effectively the intelligence can express itself.
@@ -178,21 +170,21 @@ If you are starting now, read the root-level `s01_agent_loop/` through `s17_goal
 
 ### Legacy-to-Current Mapping
 
-| Legacy 12-lesson track | Current 17-lesson track | Topic |
-|---|---|---|
-| old s01 | new s01 | Agent Loop |
-| old s02 | new s02 | Tool Use |
-| old s03 | new s05 | TodoWrite |
-| old s04 | new s06 | Subagent |
-| old s05 | new s07 | Skill Loading |
-| old s06 | new s08 | Context Compact |
-| old s07 | new s10 | Task System |
-| old s08 | new s11 | Background Tasks |
-| old s09 | new s13 | Agent Teams |
-| old s10 | new s13 | Team Protocols |
-| old s11 | new s13 | Autonomous task claiming |
-| old s12 | new s13 | Task-bound worktrees |
-| new only | s03, s04, s09, s12, s14, s15, s16, s17 | Permission, Hooks, Memory, Cron, MCP, Integrated Harness, Workflow Runtime, Goal Loop |
+| Legacy 12-lesson track | Current 17-lesson track                | Topic                                                                                 |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------------------------- |
+| old s01                | new s01                                | Agent Loop                                                                            |
+| old s02                | new s02                                | Tool Use                                                                              |
+| old s03                | new s05                                | TodoWrite                                                                             |
+| old s04                | new s06                                | Subagent                                                                              |
+| old s05                | new s07                                | Skill Loading                                                                         |
+| old s06                | new s08                                | Context Compact                                                                       |
+| old s07                | new s10                                | Task System                                                                           |
+| old s08                | new s11                                | Background Tasks                                                                      |
+| old s09                | new s13                                | Agent Teams                                                                           |
+| old s10                | new s13                                | Team Protocols                                                                        |
+| old s11                | new s13                                | Autonomous task claiming                                                              |
+| old s12                | new s13                                | Task-bound worktrees                                                                  |
+| new only               | s03, s04, s09, s12, s14, s15, s16, s17 | Permission, Hooks, Memory, Cron, MCP, Integrated Harness, Workflow Runtime, Goal Loop |
 
 ---
 
@@ -300,25 +292,25 @@ flowchart TD
 
 ## All Chapters
 
-| Chapter | Topic | Key Concepts |
-|---|---|---|
-| [s01](./s01_agent_loop/) | Agent Loop | `messages` / `while True` / `tool_use` |
-| [s02](./s02_tool_use/) | Tool Use | `TOOL_HANDLERS` / dispatch map / concurrency |
-| [s03](./s03_permission/) | Permission System | `PermissionRule` / approval pipeline |
-| [s04](./s04_hooks/) | Hook System | `PreToolUse` / `PostToolUse` / extension points |
-| [s05](./s05_todo_write/) | TodoWrite | `TodoItem` / plan-then-execute |
-| [s06](./s06_subagent/) | Subagent | `fresh messages[]` / context isolation |
-| [s07](./s07_skill_loading/) | Skill Loading | `SkillLoader` / catalog / on-demand injection |
-| [s08](./s08_context_compact/) | Context Compact | tool_result_budget / snip_compact / micro_compact / compact_history |
-| [s09](./s09_memory/) | Memory System | selection / extraction / consolidation |
-| [s10](./s10_task_system/) | Task System | `TaskRecord` / `blockedBy` / disk persistence |
-| [s11](./s11_background_tasks/) | Background Tasks | threaded execution / notification queue |
-| [s12](./s12_cron_scheduler/) | Cron Scheduler | durable scheduling / session-scoped triggers |
-| [s13](./s13_agent_teams/) | Agent Teams | persistent teammates / atomic task claims / task-bound worktrees / typed protocols |
-| [s14](./s14_mcp_plugin/) | MCP Plugin | tool discovery / namespaced tools / tool pool assembly |
-| [s15](./s15_integrated_harness/) | Integrated Harness | tools, runtime context, tasks, teams, scheduling, and MCP around one loop |
-| [s16](./s16_workflow_runtime/) | Workflow Runtime | script orchestration / lifecycle events / journal resume |
-| [s17](./s17_goal_loop/) | Goal Loop | goal gate / conversation evaluation / automatic continuation |
+| Chapter                         | Topic              | Key Concepts                                                                       |
+| ------------------------------- | ------------------ | ---------------------------------------------------------------------------------- |
+| [s01](./s01_agent_loop/)         | Agent Loop         | `messages` / `while True` / `tool_use`                                       |
+| [s02](./s02_tool_use/)           | Tool Use           | `TOOL_HANDLERS` / dispatch map / concurrency                                     |
+| [s03](./s03_permission/)         | Permission System  | `PermissionRule` / approval pipeline                                             |
+| [s04](./s04_hooks/)              | Hook System        | `PreToolUse` / `PostToolUse` / extension points                                |
+| [s05](./s05_todo_write/)         | TodoWrite          | `TodoItem` / plan-then-execute                                                   |
+| [s06](./s06_subagent/)           | Subagent           | `fresh messages[]` / context isolation                                           |
+| [s07](./s07_skill_loading/)      | Skill Loading      | `SkillLoader` / catalog / on-demand injection                                    |
+| [s08](./s08_context_compact/)    | Context Compact    | tool_result_budget / snip_compact / micro_compact / compact_history                |
+| [s09](./s09_memory/)             | Memory System      | selection / extraction / consolidation                                             |
+| [s10](./s10_task_system/)        | Task System        | `TaskRecord` / `blockedBy` / disk persistence                                  |
+| [s11](./s11_background_tasks/)   | Background Tasks   | threaded execution / notification queue                                            |
+| [s12](./s12_cron_scheduler/)     | Cron Scheduler     | durable scheduling / session-scoped triggers                                       |
+| [s13](./s13_agent_teams/)        | Agent Teams        | persistent teammates / atomic task claims / task-bound worktrees / typed protocols |
+| [s14](./s14_mcp_plugin/)         | MCP Plugin         | tool discovery / namespaced tools / tool pool assembly                             |
+| [s15](./s15_integrated_harness/) | Integrated Harness | tools, runtime context, tasks, teams, scheduling, and MCP around one loop          |
+| [s16](./s16_workflow_runtime/)   | Workflow Runtime   | script orchestration / lifecycle events / journal resume                           |
+| [s17](./s17_goal_loop/)          | Goal Loop          | goal gate / conversation evaluation / automatic continuation                       |
 
 ---
 
