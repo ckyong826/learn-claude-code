@@ -3,6 +3,7 @@
 [English](README.md) · [中文](README.zh.md) · [日本語](README.ja.md)
 
 s01 → `s02` → [s03](../s03_permission/) → s04 → ... → s16 → s17
+
 > *"加一个工具, 只加一个 handler"* — 循环不用动, 新工具注册进 dispatch map 就行。
 >
 > **Harness 层**: 工具分发 — 扩展模型能触达的边界。
@@ -124,23 +125,23 @@ for block in tool_calls:
 
 ## 速查
 
-| 概念 | 一句话 |
-|------|--------|
-| TOOL_HANDLERS | 工具名 → 处理函数的字典。加工具 = 加一行映射 |
-| 工具定义 | 告诉模型"我能做什么"的 JSON schema |
-| 多工具调用 | 模型可一次返回多个 tool_use，并按原始顺序逐个执行 |
-| 循环不变 | s01 的 `while True` 循环一行都没改 |
+| 概念          | 一句话                                            |
+| ------------- | ------------------------------------------------- |
+| TOOL_HANDLERS | 工具名 → 处理函数的字典。加工具 = 加一行映射     |
+| 工具定义      | 告诉模型"我能做什么"的 JSON schema                |
+| 多工具调用    | 模型可一次返回多个 tool_use，并按原始顺序逐个执行 |
+| 循环不变      | s01 的 `while True` 循环一行都没改              |
 
 ---
 
 ## 相对 s01 的变更
 
-| 组件 | 之前 (s01) | 之后 (s02) |
-|------|-----------|-----------|
-| 工具数量 | 1 (bash) | 5 (+read, write, edit, glob) |
-| 工具执行 | 硬编码 `run_bash()` | TOOL_HANDLERS 查表分发 |
-| 路径安全 | 无 | safe_path 校验（仅 file tools） |
-| 循环 | `while True` + `tool_use` block | 与 s01 完全一致 |
+| 组件     | 之前 (s01)                          | 之后 (s02)                      |
+| -------- | ----------------------------------- | ------------------------------- |
+| 工具数量 | 1 (bash)                            | 5 (+read, write, edit, glob)    |
+| 工具执行 | 硬编码 `run_bash()`               | TOOL_HANDLERS 查表分发          |
+| 路径安全 | 无                                  | safe_path 校验（仅 file tools） |
+| 循环     | `while True` + `tool_use` block | 与 s01 完全一致                 |
 
 ---
 
@@ -167,6 +168,5 @@ python s02_tool_use/code.py
 现在 Agent 有 5 个专用工具。file tools 受 `safe_path` 保护，但 bash 不受限制，`rm -rf /` 还是能跑。
 
 s03 Permission → 在工具执行之前加一道门：这个操作安全吗？需要用户批准吗？
-
 
 <!-- translation-sync: zh@v1, en@v0, ja@v0 -->

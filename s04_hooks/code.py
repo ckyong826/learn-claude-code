@@ -133,7 +133,7 @@ TOOL_HANDLERS = {
 
 
 # -- New in s04: hook system (s03 permission logic now uses hooks) --
-
+// abstract tool calling logic into a hook system, so that permission checks and logging can be added without cluttering the agent loop.
 HOOKS = {"UserPromptSubmit": [], "PreToolUse": [], "PostToolUse": [], "Stop": []}
 
 def register_hook(event: str, callback):
@@ -158,7 +158,7 @@ DESTRUCTIVE = ["rm ", "> /etc/", "chmod 777"]
 def contains_destructive_command(command: str) -> bool:
     return bool(DESTRUCTIVE_COMMAND_WORD.search(command))
 
-
+// Pre Tool Use Hook Definitions: permission check, logging, and user approval for potentially destructive commands.
 def permission_hook(block):
     """PreToolUse: s03 check_permission() logic moved here."""
     if block.name == "bash":
@@ -185,12 +185,14 @@ def permission_hook(block):
                 return "Permission denied by user"
     return None
 
+// Additional hooks for logging and large output warnings
 def log_hook(block):
     """PreToolUse: log every tool call."""
     args_preview = str(list(block.input.values())[:2])[:60]
     print(f"\033[90m[HOOK] {block.name}({args_preview})\033[0m")
     return None
 
+// Post Tool Use Hook: warn if output is very large
 def large_output_hook(block, output):
     """PostToolUse: warn on large output."""
     if len(str(output)) > 100000:
@@ -229,9 +231,11 @@ def agent_loop(messages: list):
         )
         messages.append({"role": "assistant", "content": response.content})
 
+        // Check for tool calls in the model's response
         tool_calls = [
             block for block in response.content if block.type == "tool_use"
         ]
+        // If no tool calls, check Stop hook for any forced messages, otherwise exit the loop
         if not tool_calls:
             force = trigger_hooks("Stop", messages)
             if force:
@@ -242,15 +246,19 @@ def agent_loop(messages: list):
         results = []
         for block in tool_calls:
             # s04 change: hook replaces hard-coded check_permission()
+            // from model response, check if the tool call is allowed by triggering PreToolUse hooks
             blocked = trigger_hooks("PreToolUse", block)
             if blocked:
+                // If blocked, append a tool_result indicating the block reason and skip execution
                 results.append({"type": "tool_result", "tool_use_id": block.id,
                                 "content": str(blocked)})
                 continue
 
+            // If not blocked, run the tool and capture output
             handler = TOOL_HANDLERS.get(block.name)
             output = handler(**block.input) if handler else f"Unknown: {block.name}"
 
+            // After tool execution, trigger PostToolUse hooks for any additional processing or logging
             trigger_hooks("PostToolUse", block, output)  # s04: post hook
 
             results.append({"type": "tool_result", "tool_use_id": block.id, "content": output})

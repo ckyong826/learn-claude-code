@@ -113,12 +113,12 @@ Agent 收到任务后的典型流程：先调 `todo_write` 列出所有步骤（
 
 ## 相对 s04 的变更
 
-| 组件 | 之前 (s04) | 之后 (s05) |
-|------|-----------|-----------|
-| 工具数量 | 5 (bash, read, write, edit, glob) | 6 (+todo_write) |
-| 规划能力 | 无 | 带状态的 TODO 列表 + reminder |
-| SYSTEM 提示 | 通用提示 | 加入 "先计划再执行" 引导 |
-| 循环 | 工具分发与 Hooks | 保留分发路径，加入 rounds_since_todo 和 reminder 注入 |
+| 组件        | 之前 (s04)                        | 之后 (s05)                                            |
+| ----------- | --------------------------------- | ----------------------------------------------------- |
+| 工具数量    | 5 (bash, read, write, edit, glob) | 6 (+todo_write)                                       |
+| 规划能力    | 无                                | 带状态的 TODO 列表 + reminder                         |
+| SYSTEM 提示 | 通用提示                          | 加入 "先计划再执行" 引导                              |
+| 循环        | 工具分发与 Hooks                  | 保留分发路径，加入 rounds_since_todo 和 reminder 注入 |
 
 ---
 
@@ -144,6 +144,5 @@ python s05_todo_write/code.py
 Agent 能计划了。但如果一个任务太大，比如"重构整个认证模块"，光靠 TODO 列表不够。这个任务本身就是几十个小任务的集合，放在同一个对话里会被上下文淹没。
 
 s06 Subagent → 把大任务拆成子任务，每个子任务派一个独立的 Agent。它们有自己的干净上下文，不会互相污染。
-
 
 <!-- translation-sync: zh@v1, en@v1, ja@v1 -->

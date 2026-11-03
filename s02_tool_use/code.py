@@ -78,13 +78,14 @@ def run_bash(command: str) -> str:
 
 # -- New in s02: four tools --
 
+// ensure file path reading is in the workspace
 def safe_path(p: str) -> Path:
     path = (WORKDIR / p).resolve()
     if not path.is_relative_to(WORKDIR):
         raise ValueError(f"Path escapes workspace: {p}")
     return path
 
-
+// different tool for CRUD file operations, instead of using bash for everything
 def run_read(path: str, limit: int | None = None) -> str:
     try:
         lines = safe_path(path).read_text(encoding="utf-8").splitlines()
@@ -150,6 +151,7 @@ TOOLS = [
 
 # -- New in s02: dispatch map (replaces s01's hard-coded run_bash call) --
 
+// Map tool names to their handler functions. This allows the agent loop to call the correct function based on the tool name.
 TOOL_HANDLERS = {
     "bash": run_bash, "read_file": run_read, "write_file": run_write,
     "edit_file": run_edit, "glob": run_glob,
@@ -177,6 +179,7 @@ def agent_loop(messages: list):
         results = []
         for block in tool_calls:
             print(f"\033[33m> {block.name}\033[0m")
+            // run the tool and capture output (tool calling)
             handler = TOOL_HANDLERS.get(block.name)
             output = handler(**block.input) if handler else f"Unknown: {block.name}"
             print(str(output)[:200])

@@ -120,9 +120,11 @@ def run_glob(pattern: str) -> str:
 
 class TodoManager:
     def __init__(self):
+        // Initialize an empty list to hold todo items
         self.items: list[dict] = []
 
     def update(self, todos: list | str) -> str:
+        // if todos is a string, try to parse it as JSON or Python literal
         if isinstance(todos, str):
             try:
                 todos = json.loads(todos)
@@ -132,6 +134,7 @@ class TodoManager:
                 except (SyntaxError, ValueError) as e:
                     raise ValueError("todos must be a list or JSON array string") from e
 
+        // Validate that todos is a list and enforce constraints
         if not isinstance(todos, list):
             raise ValueError("todos must be a list")
         if len(todos) > 20:
@@ -139,20 +142,24 @@ class TodoManager:
 
         validated = []
         in_progress_count = 0
+        // Validate each todo item for required fields and correct status
         for index, todo in enumerate(todos):
             if not isinstance(todo, dict):
                 raise ValueError(f"todos[{index}] must be an object")
 
             content = str(todo.get("content", "")).strip()
             status = str(todo.get("status", "pending")).lower()
+            // Ensure content is not empty and status is valid
             if not content:
                 raise ValueError(f"todos[{index}] requires content")
+            // Ensure status is one of the allowed values
             if status not in ("pending", "in_progress", "completed"):
                 raise ValueError(f"todos[{index}] has invalid status '{status}'")
+            // Count how many todos are in progress; only one is allowed
             if status == "in_progress":
                 in_progress_count += 1
             validated.append({"content": content, "status": status})
-
+        // Enforce that only one todo can be in progress at a time
         if in_progress_count > 1:
             raise ValueError("Only one todo can be in_progress at a time")
 
@@ -160,10 +167,12 @@ class TodoManager:
         return self.render()
 
     def render(self) -> str:
+        // Render the current todo list as a formatted string
         if not self.items:
             return "No todos."
 
         lines = []
+        // For each todo item, determine its status marker and format it for display
         for todo in self.items:
             marker = {
                 "pending": "[ ]",
@@ -172,6 +181,7 @@ class TodoManager:
             }[todo["status"]]
             lines.append(f"{marker} {todo['content']}")
 
+        // Count how many todos are completed and append a summary line
         done = sum(todo["status"] == "completed" for todo in self.items)
         lines.append(f"\n({done}/{len(self.items)} completed)")
         return "\n".join(lines)
@@ -200,6 +210,7 @@ TOOLS = [
     {"name": "glob", "description": "Find files matching a glob pattern; ** matches recursively.",
      "input_schema": {"type": "object", "properties": {"pattern": {"type": "string"}}, "required": ["pattern"]}},
     # s05: new tool
+    // Define a new tool for managing todos, with a schema that allows up to 20 todo items, each with content and status
     {"name": "todo_write", "description": "Create and manage a task list for your current coding session.",
      "input_schema": {"type": "object", "properties": {"todos": {"type": "array", "maxItems": 20, "items": {"type": "object", "properties": {"content": {"type": "string", "minLength": 1}, "status": {"type": "string", "enum": ["pending", "in_progress", "completed"]}}, "required": ["content", "status"]}}}, "required": ["todos"]}},
 ]

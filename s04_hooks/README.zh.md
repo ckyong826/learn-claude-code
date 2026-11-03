@@ -43,12 +43,12 @@ s03 的循环和权限逻辑完全保留。唯一的变动是把 `check_permissi
 
 四个事件，覆盖一个完整的 agent cycle：
 
-| 事件 | 触发时机 | 典型用途 |
-|------|---------|---------|
-| UserPromptSubmit | 用户输入提交后、进入 LLM 前 | 输入验证、注入上下文 |
-| PreToolUse | 工具执行前 | 权限检查、日志记录 |
-| PostToolUse | 工具执行后 | 副作用（自动 git add 等）、输出检查 |
-| Stop | 循环即将退出时 | 收尾清理、决定是否继续循环 |
+| 事件             | 触发时机                    | 典型用途                            |
+| ---------------- | --------------------------- | ----------------------------------- |
+| UserPromptSubmit | 用户输入提交后、进入 LLM 前 | 输入验证、注入上下文                |
+| PreToolUse       | 工具执行前                  | 权限检查、日志记录                  |
+| PostToolUse      | 工具执行后                  | 副作用（自动 git add 等）、输出检查 |
+| Stop             | 循环即将退出时              | 收尾清理、决定是否继续循环          |
 
 扩展通过 `register_hook()` 添加，循环只调用 `trigger_hooks()`。
 
@@ -186,14 +186,14 @@ for block in tool_calls:
 
 ## 相对 s03 的变更
 
-| 组件 | 之前 (s03) | 之后 (s04) |
-|------|-----------|-----------|
-| 扩展方式 | check_permission() 硬编码在循环里 | HOOKS 注册表 + trigger_hooks() |
-| 新函数 | — | register_hook, trigger_hooks |
-| hook 回调 | — | context_inject_hook, permission_hook, log_hook, large_output_hook, summary_hook |
-| 循环 | 直接调用 check_permission() | 调用 trigger_hooks("PreToolUse", ...) |
-| 退出控制 | 无 | trigger_hooks("Stop", ...) 可阻止退出 |
-| 输入拦截 | 无 | trigger_hooks("UserPromptSubmit", ...) 可注入上下文 |
+| 组件      | 之前 (s03)                        | 之后 (s04)                                                                      |
+| --------- | --------------------------------- | ------------------------------------------------------------------------------- |
+| 扩展方式  | check_permission() 硬编码在循环里 | HOOKS 注册表 + trigger_hooks()                                                  |
+| 新函数    | —                                | register_hook, trigger_hooks                                                    |
+| hook 回调 | —                                | context_inject_hook, permission_hook, log_hook, large_output_hook, summary_hook |
+| 循环      | 直接调用 check_permission()       | 调用 trigger_hooks("PreToolUse", ...)                                           |
+| 退出控制  | 无                                | trigger_hooks("Stop", ...) 可阻止退出                                           |
+| 输入拦截  | 无                                | trigger_hooks("UserPromptSubmit", ...) 可注入上下文                             |
 
 ---
 
@@ -219,6 +219,5 @@ python s04_hooks/code.py
 Agent 现在能安全执行操作了。但它有没有停下来想过"我应该先做什么，再做什么"？给它一个复杂任务，它是一上来就动手，还是先列个计划？
 
 s05 TodoWrite → 给 Agent 一个计划工具。先列清单，再做。
-
 
 <!-- translation-sync: zh@v1, en@v0, ja@v0 -->

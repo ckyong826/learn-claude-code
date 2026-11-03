@@ -155,6 +155,7 @@ TOOL_HANDLERS = {
 # -- New in s03: three-gate permission pipeline --
 
 # Gate 1: Hard deny list - always forbidden
+// Destructive commands that are blocked outright, without user approval.
 DENY_LIST = ["rm -rf /", "sudo", "shutdown", "reboot", "mkfs", "dd if=", "> /dev/sda"]
 
 def check_deny_list(command: str) -> str | None:
@@ -169,15 +170,18 @@ DESTRUCTIVE_COMMAND_WORD = re.compile(
     r"(?i)(?:^|[;&|()\n])\s*(?:rm|del)(?=\s|$|[;&|()])"
 )
 
-
+// Check if the command contains potentially destructive operations, such as 'rm' or 'del'.
 def contains_destructive_command(command: str) -> bool:
     return bool(DESTRUCTIVE_COMMAND_WORD.search(command))
 
 
+
 PERMISSION_RULES = [
+    // Rule: Writing outside the workspace is forbidden
     {"tools": ["read_file", "write_file", "edit_file"],
      "check": lambda args: not (WORKDIR / args.get("path", "")).resolve().is_relative_to(WORKDIR),
      "message": "Writing outside workspace"},
+    // Rule: Destructive commands in bash are forbidden
     {"tools": ["bash"],
      "check": lambda args: contains_destructive_command(args.get("command", "")) or
      any(kw in args.get("command", "") for kw in ["rm ", "> /etc/", "chmod 777"]),
@@ -200,6 +204,7 @@ def ask_user(tool_name: str, args: dict, reason: str) -> str:
 
 
 # Pipeline: all three gates chained
+// Check deny command -> check rules -> ask user for approval if needed. Returns True if permission granted, False otherwise.
 def check_permission(block) -> bool:
     if block.name == "bash":
         reason = check_deny_list(block.input.get("command", ""))
